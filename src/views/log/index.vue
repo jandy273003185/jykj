@@ -1,0 +1,208 @@
+/**
+ * 日志管理
+ */
+<template>
+  <div>
+    <!-- 面包屑导航 -->
+    <!-- <el-breadcrumb separator-class="el-icon-arrow-right">
+      <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
+      <el-breadcrumb-item>FTP列表</el-breadcrumb-item>
+    </el-breadcrumb> -->
+    <!-- 搜索筛选 -->
+    <el-form :inline="true" :model="formInline" class="user-search">
+      <el-form-item label="文件名：">
+        <el-input size="small" v-model="formInline.fileName" placeholder="输入文件名"></el-input>
+      </el-form-item>
+      <el-form-item label="状态：">
+        <el-select size="small" v-model="formInline.sendState" placeholder="请选择" class="userRole">
+            <el-option label="成功" value="1"></el-option>
+            <el-option label="失败" value="0"></el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item>
+        <el-button size="small" type="primary" icon="el-icon-search" @click="search">搜索</el-button>
+        <el-button type="primary" size="small" style="marginLeft:10px;" icon="el-icon-download" @click="exportExcel">导出</el-button>
+      </el-form-item>
+    </el-form>
+    <!--列表-->
+    <el-table size="small" :data="listData" highlight-current-row v-loading="loading" border element-loading-text="拼命加载中" style="width: 100%;">
+      <!-- <el-table-column align="center" width="0"></el-table-column> -->
+      <!-- type="selection" -->
+      <el-table-column type="index" label="序号" width="50"></el-table-column>
+      <el-table-column :show-overflow-tooltip="true" sortable prop="fileName" label="文件名" width="140">
+      </el-table-column>
+      <el-table-column :show-overflow-tooltip="true" sortable prop="fileSize" label="文件大小" width="90">
+      </el-table-column>
+      <el-table-column :show-overflow-tooltip="true" sortable prop="fileMd5" label="文件MD5" width="140">
+      </el-table-column>
+      <el-table-column sortable prop="sender" label="发送方" width="100">
+      </el-table-column>
+      <el-table-column sortable prop="receiver" label="接收方" width="100">
+      </el-table-column>
+      <el-table-column :show-overflow-tooltip="true" sortable prop="sendPath" label="发送路径" width="100">
+      </el-table-column>
+      <el-table-column :show-overflow-tooltip="true" sortable prop="receivePath" label="接收路径" width="100">
+      </el-table-column>
+      <el-table-column sortable prop="sendType" label="发送方式" width="100">
+      </el-table-column>
+      <el-table-column sortable prop="sendState" label="发送状态" width="90">
+        <template slot-scope="scope">
+          <div>{{scope.row.sendState|sendState}}</div>
+        </template>
+      </el-table-column>
+      <el-table-column sortable prop="createTime" label="发送时间" width="130">
+        <template slot-scope="scope">
+          <div>{{scope.row.createTime|timestampToTime}}</div>
+        </template>
+      </el-table-column>
+      <el-table-column :show-overflow-tooltip="true" sortable prop="errorInfo" label="错误信息" width="140">
+        <template slot-scope="scope">
+          <div class="linkDialog" @click="errorInfoClick(scope.row)">{{scope.row.errorInfo}}</div>
+        </template>
+      </el-table-column>
+    </el-table>
+    <!-- 分页组件 -->
+    <Pagination v-bind:child-msg="pageparm" @callFather="callFather"></Pagination>
+    <el-dialog :visible.sync="errorInfoVisible" width="60%" @click="closeErrorInfoDialog">
+      <div>{{errorInfo}}</div>
+    </el-dialog>
+  </div>
+</template>
+
+<script>
+import { logList, logExport } from '../../api/userMG'
+import Pagination from '../../components/Pagination'
+export default {
+  data() {
+    return {
+      nshow: true, //switch开启
+      fshow: false, //switch关闭
+      loading: false, //是显示加载
+      editFormVisible: false, //控制编辑页面显示与隐藏
+      title: '添加',
+      editForm: {
+      },
+      // rules表单验证
+      rules: {
+        username: [
+          { required: true, message: '请输入账号', trigger: 'blur' }
+        ],
+      },
+      formInline: {
+        page: 1,
+        size: 10,
+      },
+      // 删除FTP
+      seletedata: {
+        ids: '',
+        token: localStorage.getItem('logintoken')
+      },
+      userparm: [], //搜索权限
+      listData: [], //用户数据
+      // 分页参数
+      pageparm: {
+        currentPage: 1,
+        pageSize: 10,
+        total: 10
+      },
+      errorInfoVisible:false, 
+      errorInfo:'',
+
+    }
+  },
+  // 注册组件
+  components: {
+    Pagination
+  },
+  created() {
+    this.getdata(this.formInline)
+  },
+  methods: {
+    // 获取列表
+    getdata(parameter) {
+      this.loading = true
+      logList(parameter)
+        .then(res => {
+          this.loading = false
+          if (res.code != 200) {
+            this.$message({
+              type: 'info',
+              message: res.msg
+            })
+          } else {
+            this.listData = res.msg.records
+            // 分页赋值
+            this.pageparm.currentPage = this.formInline.page
+            this.pageparm.pageSize = this.formInline.size
+            this.pageparm.total = res.msg.total
+          }
+        })
+        .catch(err => {
+          this.loading = false
+          this.$message.error('系统异常，请稍后再试！')
+        })
+    },
+    exportExcel() {
+      this.loading = true
+      logExport(this.formInline,'日志列表')
+        .then(result => {
+          this.loading = false
+          // if (res.code != 200) {
+          //   this.$message({
+          //     type: 'info',
+          //     message: res.msg
+          //   })
+          // } 
+        })
+        .catch(err => {
+          this.loading = false
+          this.$message.error('系统异常，请稍后再试！')
+        })
+    },
+    // 分页插件事件
+    callFather(parm) {
+      this.formInline.page = parm.currentPage
+      this.formInline.size= parm.pageSize
+      this.getdata(this.formInline)
+    },
+    // 搜索事件
+    search() {
+      this.getdata(this.formInline)
+    },
+   
+    // 关闭编辑、增加弹出框
+    closeDialog() {
+      this.editFormVisible = false
+    },
+    errorInfoClick(data){
+      this.errorInfo = data.errorInfo;
+      this.errorInfoVisible = true;
+    },
+    closeErrorInfoDialog(){
+      this.errorInfoVisible = false;
+    },
+  }
+}
+</script>
+
+<style scoped>
+.user-search {
+  margin-top: 20px; 
+}
+.userRole {
+  width: 100%;
+}
+.inputWid{
+  width:300px;
+}
+.linkDialog{
+  color:blue;
+  cursor:pointer;
+}
+.linkDialog:hover{
+  border-bottom:1px solid blue;
+}
+</style>
+
+ 
+ 
