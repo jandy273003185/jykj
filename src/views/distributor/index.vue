@@ -23,27 +23,32 @@
       <!-- <el-table-column align="center" width="0"></el-table-column> -->
       <!-- type="selection" -->
       <el-table-column type="index" label="序号" width="50"></el-table-column>
-      <el-table-column sortable prop="serverAddr" label="FTP服务器地址">
+      <el-table-column sortable prop="serverAddr" label="FTP服务器地址" width="130">
         <template slot-scope="scope">
           <div class="linkDialog" @click="serverAddrClick(scope.row)">{{scope.row.serverAddr}}</div>
         </template>
       </el-table-column>
-      <el-table-column sortable prop="serverPort" label="FTP服务器端口">
+      <el-table-column sortable prop="serverPort" label="FTP服务器端口" width="130">
       </el-table-column>
-      <el-table-column sortable prop="protocol" label="协议" width="90">
+      <el-table-column sortable prop="protocol" label="协议" width="70">
         <template slot-scope="scope">
           {{scope.row.protocol == '0'?'ftp':'sftp'}}
         </template>
       </el-table-column>
-      <el-table-column sortable prop="account" label="FTP服务器账号">
+      <el-table-column sortable prop="encryptTransport" label="是否支持SSL/TLS" width="143">
+        <template slot-scope="scope">
+          {{scope.row.encryptTransport == '0'?'否':'是'}}
+        </template>
       </el-table-column>
-      <el-table-column sortable prop="password" label="密码">
+      <el-table-column sortable prop="account" label="FTP服务器账号" width="128">
+      </el-table-column>
+      <el-table-column sortable prop="password" label="密码" width="130">
       </el-table-column>
       <el-table-column sortable prop="manager" label="管理人" width="90">
       </el-table-column>
-      <el-table-column sortable prop="groupName" label="所属组织">
+      <el-table-column sortable prop="groupName" label="所属组织" width="130">
       </el-table-column>
-      <el-table-column align="center" label="操作" min-width="180">
+      <el-table-column align="center" label="操作" min-width="180" width="240">
         <template slot-scope="scope">
           <el-button size="mini" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
           <el-button size="mini" @click="handleTest(scope.row)">测试连接</el-button>
@@ -66,6 +71,12 @@
           <el-select size="small" style="width:200px" v-model="editForm.protocol" placeholder="请选择">
             <el-option label="ftp" value="0"></el-option>
             <el-option label="sftp" value="1"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="是否支持SSL/TLS" prop="encryptTransport">
+          <el-select size="small" style="width:200px" v-model="editForm.encryptTransport" placeholder="请选择">
+            <el-option label="是" value="1"></el-option>
+            <el-option label="否" value="0"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="FTP服务器账号" prop="account">
@@ -195,9 +206,10 @@ export default {
         this.title = '修改'
         this.editForm = row
         this.editForm.protocol = row.protocol.toString();
+        this.editForm.encryptTransport = row.encryptTransport.toString();
       } else {
         this.title = '添加'
-        this.editForm = {protocol:'0'}
+        this.editForm = {protocol:'0',encryptTransport:'1'}
       }
     },
     // 编辑、增加页面保存方法

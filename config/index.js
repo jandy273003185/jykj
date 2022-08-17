@@ -12,7 +12,7 @@ module.exports = {
         assetsPublicPath: '/',
         proxyTable: {
             '/api': {
-                target: 'http://172.26.10.59:8080', // 杨平
+                target: 'http://172.26.10.56:8080', // 杨平
                 // target: 'http://172.26.16.221:8080', // 测试服务器
                 // target: 'http://localhost:8080', // 打包至测试服务器
                 changeOrigin: true, // 在本地会创建一个虚拟服务端，然后发送请求的数据，并同时接收请求的数据，这样服务端和服务端进行数据的交互就不会有跨域问题

@@ -40,12 +40,14 @@
       </el-table-column>
       <el-table-column :show-overflow-tooltip="true" sortable prop="receiver[0].groupName" label="文件接收方" width="110">
         <template slot-scope="scope">
-          <div>{{scope.row.receiver[0].groupName+'('+scope.row.receiver[0].serverAddr+')'}}</div>
+          <div>{{scope.row.receiver.length>0?scope.row.receiver[0].groupName+'('+scope.row.receiver[0].serverAddr+')':''}}</div>
         </template>
       </el-table-column>
       <el-table-column sortable prop="receiver[0]" label="接收路径" width="100">
         <template slot-scope="scope">
-          <div>{{scope.row.receiver[0]|storagePath}}</div>
+          <div v-for="(item,i) in scope.row.receiver[0]&&scope.row.receiver[0].items" :key="i">
+            {{item.storagePath}}
+          </div>
         </template>
       </el-table-column>
       <el-table-column sortable prop="sendType" label="发送方式" width="96">
@@ -134,9 +136,9 @@
         <el-form-item v-if="fieldVisible&&bakVisible" label="邮箱" prop="noticeEmail">
           <el-select multiple class="inputWid" size="small" v-model="editForm.noticeEmail" placeholder="请选择" @change = "$forceUpdate()">
             <el-option
-              v-for="item in receiverIdArr"
+              v-for="item in mailIdArr"
               :key="item.id"
-              :label="editForm.sendType == '1'?item.groupName+'('+item.serverAddr+')':item.groupName+'('+item.addr+')'"
+              :label="item.groupName+'('+item.addr+')'"
               :value="item.id">
             </el-option>
           </el-select>
@@ -248,6 +250,7 @@ export default {
       hzJobId:'',
       hzStatus:0,
       hzStatusTxt:'',
+      mailIdArr:[],
     }
   },
   // 注册组件
@@ -371,7 +374,7 @@ export default {
               message: res.msg
             })
           } else {
-              this.receiverIdArr = res.msg
+              this.mailIdArr = res.msg
               this.receiverIdArr3 = res.msg
           }
         })
@@ -385,7 +388,6 @@ export default {
       this.queryPath(1,[item]);
     },
     receiverIdChange(item){
-      this.editForm.receiverItemId = []
       // if(this.editForm.sendtype != '1') return;
       this.$forceUpdate()
       this.queryPath(2,item);
@@ -428,17 +430,21 @@ export default {
         this.sendIdChange(row.sender.id);
         this.editForm.sendItemId = row.sender.items[0].id
         let receiverIds = [];
-        row.receiver.map((item)=>{
-          receiverIds.push(item.id)
-        })
+        if(row.receiver.length>0){
+          row.receiver.map((item)=>{
+            receiverIds.push(item.id)
+          })
+        }
         this.editForm.receiverId = receiverIds
         this.receiverIdChange(receiverIds);
         this.editForm.noticeEmail = row.noticeEmail&&row.noticeEmail.length>0?row.noticeEmail.split(','):row.noticeEmail;
         let arr = [];
-        if(row.receiver[0].items){
-          row.receiver[0].items.map((item)=>{
-            arr.push(item.id)
-          })
+        if(row.receiver.length>0){
+          if(row.receiver[0].items){
+            row.receiver[0].items.map((item)=>{
+              arr.push(item.id)
+            })
+          }
         }
         this.editForm.receiverItemId = arr
       } else {

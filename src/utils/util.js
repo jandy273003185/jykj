@@ -90,14 +90,18 @@ const sendTypeFilter = (val) => {
         return 'FTP'
     }else if(val == '2'){
         return '邮件'
+    }else if(val == '3'){
+        return '仅备份'
     }
 }
 const storagePath = (val) => {
-    if (!val) return;
+    console.log(7777777777777777777777)
     let str = '';
-    if(!val.items){return ''}
-    val.items.map((item)=>{
-        if(val.items>1){
+    console.log(val)
+    if(!val){return ''}
+    console.log(val)
+    val.map((item)=>{
+        if(val.length>1){
             str = item.storagePath + ' , ';
         }else{
             str = item.storagePath;
