@@ -25,16 +25,16 @@
       </el-form-item>
     </el-form>
     <!--列表-->
-    <el-table size="small" :data="listData" highlight-current-row v-loading="loading" border element-loading-text="拼命加载中" style="width: 100%;">
+    <el-table  @sort-change='sortChange' size="small" :data="listData" highlight-current-row v-loading="loading" border element-loading-text="拼命加载中" style="width: 100%;">
       <!-- <el-table-column align="center" width="0"></el-table-column> -->
       <!-- type="selection" -->
       <el-table-column type="index" label="序号" width="50"></el-table-column>
       <el-table-column :show-overflow-tooltip="true" sortable prop="fileName" label="文件名" width="140">
       </el-table-column>
-      <el-table-column :show-overflow-tooltip="true" sortable prop="fileSize" label="文件大小" width="90">
+      <el-table-column  sortable="custom" :show-overflow-tooltip="true" prop="fileSize" label="文件大小" width="90">
       </el-table-column>
       <el-table-column :show-overflow-tooltip="true" sortable prop="fileMd5" label="文件MD5" width="140">
-      </el-table-column>
+      </el-table-column>"
       <el-table-column sortable prop="sender" label="发送方" width="100">
       </el-table-column>
       <el-table-column sortable prop="receiver" label="接收方" width="100">
@@ -107,7 +107,7 @@ export default {
       },
       errorInfoVisible:false, 
       errorInfo:'',
-
+      proptype: "",
     }
   },
   // 注册组件
@@ -118,6 +118,28 @@ export default {
     this.getdata(this.formInline)
   },
   methods: {
+   sortChange(column) {
+      // console.log("排序", column.prop, column.order);
+      this.formInline.page = 1; // 排序后返回第一页
+      this.proptype = column.prop; // 将键名prop赋值给变量proptype
+      this.listData = this.listData.sort(
+        this.SortFun(column.prop, column.order === "descending")
+      );
+    },
+    SortFun(attr, rev) {
+          //第一个参数传入info里的prop表示排的是哪一列，第二个参数是升还是降排序
+          if (rev == undefined) {
+            rev = 1;
+          } else {
+            rev = rev ? 1 : -1;
+            //rev = rev>0 ? 1 : -1;
+          }
+          return function (a, b) {
+            a = a[attr];
+            b = b[attr];
+            if(rev == 1){return b-a;}else{return a-b}
+          };
+    },
     // 获取列表
     getdata(parameter) {
       this.loading = true

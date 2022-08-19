@@ -95,7 +95,6 @@ const sendTypeFilter = (val) => {
     }
 }
 const storagePath = (val) => {
-    console.log(7777777777777777777777)
     let str = '';
     console.log(val)
     if(!val){return ''}
