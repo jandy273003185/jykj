@@ -78,7 +78,7 @@ function delCookie(name) {
 
 const sendState = (val) => {
     if (!val) return;
-    if(val == 1){
+    if(val == 0){
         return '成功'
     }else{
         return '失败'
@@ -92,6 +92,22 @@ const sendTypeFilter = (val) => {
         return '邮件'
     }else if(val == '3'){
         return '仅备份'
+    }
+}
+const taskTypeFilter = (val) => {
+    if (!val) return;
+    if(val == '1'){
+        return 'FTP传输'
+    }else if(val == '2'){
+        return '邮件发送'
+    }else if(val == '3'){
+        return '仅备份'
+    }else if(val == '4'){
+        return '长期备份'
+    }else if(val == '5'){
+        return '数据清理'
+    }else if(val == '6'){
+        return '文件监控'
     }
 }
 const storagePath = (val) => {
@@ -123,4 +139,5 @@ export {
     sendState,
     sendTypeFilter,
     storagePath,
+    taskTypeFilter,
 }

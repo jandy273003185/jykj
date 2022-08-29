@@ -93,6 +93,12 @@ export const logSave = (params) => { return req("post", "/api/log/saveOrUpdate",
 // 日志管理-删除日志
 export const logDelete = (params) => { return axios.delete("/api/log/delete?id=" + params ).then(res => res.data) };
 export const logExport = (params,fileName) => { return exportExcelInterface(params,fileName, "/api/log/export", ) };
+export const sendLogList = (params) => { return req("post", "/api/sendLog/list", params) }; // 传输日志
+export const backupClearLogList = (params) => { return req("post", "/api/backupClearLog/list", params) }; // 备份清理日志
+export const monitorLogList = (params) => { return req("post", "/api/monitorLog/list", params) }; // 监控日志
+export const sendLogExport = (params,fileName) => { return exportExcelInterface(params,fileName, "/api/sendLog/export", ) };
+export const backupClearLogExport = (params,fileName) => { return exportExcelInterface(params,fileName, "/api/backupClearLog/export", ) };
+export const monitorLogExport = (params,fileName) => { return exportExcelInterface(params,fileName, "/api/monitorLog/export", ) };
 
 // 用户管理-重置密码
 export const userPwd = (params) => { return req("post", "/api/User/pwd", params) };

@@ -133,7 +133,7 @@
         <!-- <el-form-item label="备份路径" prop="backupPath">
           <el-input class="inputWid" size="small" v-model="editForm.backupPath" auto-complete="off" placeholder="请输入备份路径"></el-input>
         </el-form-item> -->
-        <el-form-item v-if="fieldVisible&&bakVisible" label="邮箱" prop="noticeEmail">
+        <el-form-item v-if="(fieldVisible&&bakVisible)||editForm.sendType==3" label="邮箱" prop="noticeEmail">
           <el-select multiple class="inputWid" size="small" v-model="editForm.noticeEmail" placeholder="请选择" @change = "$forceUpdate()">
             <el-option
               v-for="item in mailIdArr"
@@ -178,6 +178,16 @@
         <el-form-item label="月份" v-if="monthVisible">
           <!-- <el-date-picker class="inputWid" size="small" value-format="M" v-model="editHZForm.methodParams" type="month" placeholder="请选择月份"></el-date-picker>  -->
           <el-input class="inputWid" onKeypress="return(/[\d]/.test(String.fromCharCode(event.keyCode)))" type="number" min="1" size="small" v-model="editHZForm.methodParams" auto-complete="off" placeholder="请输入月份"></el-input>
+        </el-form-item>
+        <el-form-item v-if="(editHZForm.type==1||editHZForm.type==2)?true:false" label="邮箱" prop="noticeEmail">
+          <el-select multiple class="inputWid" size="small" v-model="editHZForm.noticeEmail" placeholder="请选择" @change = "$forceUpdate()">
+            <el-option
+              v-for="item in mailIdArr"
+              :key="item.id"
+              :label="item.groupName+'('+item.addr+')'"
+              :value="item.id">
+            </el-option>
+          </el-select>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -605,6 +615,7 @@ export default {
     },
     queryFrequencyData(){
       this.editHZForm.appointServer = '';
+      this.editHZForm.noticeEmail = '';
       queryFrequency(this.editHZForm.type).then(res => {
           this.loading = false
           if (res.code != 200) {
@@ -618,6 +629,9 @@ export default {
             if(res.msg.appointServer){
               this.$set(this.editHZForm,'appointServer',res.msg.appointServer.split(','))
             }
+            if(res.msg.noticeEmail){
+              this.$set(this.editHZForm,'noticeEmail',res.msg.noticeEmail.split(','))
+            }
             this.hzJobId = res.msg.jobId;
             this.hzStatus = res.msg.status;
             this.hzStatusTxt = res.msg.status == '0'?'暂停' : '启动';
@@ -630,6 +644,7 @@ export default {
     },
     submitFormHZ(){
       this.editHZForm.appointServer = this.editHZForm.appointServer.toString();
+      this.editHZForm.noticeEmail = this.editHZForm.noticeEmail.toString();
       taskHZ(this.editHZForm).then(res => {
           this.loading = false
           if (res.code != 200) {
@@ -641,6 +656,7 @@ export default {
             this.$message.success('保存成功！')
             this.HZVisible = false
             if(this.editHZForm.appointServer.length >0) this.editHZForm.appointServer = this.editHZForm.appointServer.split(',');
+            if(this.editHZForm.noticeEmail.length >0) this.editHZForm.noticeEmail = this.editHZForm.noticeEmail.split(',');
             this.getdata(this.formInline)
           }
         })
