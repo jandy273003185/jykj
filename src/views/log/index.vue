@@ -92,7 +92,7 @@
           </el-form-item>
         </el-form>
         <!--列表-->
-        <el-table  @sort-change='sortChange' size="small" :data="listData2" highlight-current-row v-loading="loading" border element-loading-text="拼命加载中" style="width: 100%;">
+        <el-table  @sort-change='sortChange2' size="small" :data="listData2" highlight-current-row v-loading="loading" border element-loading-text="拼命加载中" style="width: 100%;">
           <el-table-column type="index" label="序号" width="50"></el-table-column>
           <el-table-column :show-overflow-tooltip="true" sortable prop="fileName" label="文件名" width="140">
           </el-table-column>
@@ -143,7 +143,7 @@
           </el-form-item>
         </el-form>
         <!--列表-->
-        <el-table  @sort-change='sortChange' size="small" :data="listData3" highlight-current-row v-loading="loading" border element-loading-text="拼命加载中" style="width: 100%;">
+        <el-table  @sort-change='sortChange3' size="small" :data="listData3" highlight-current-row v-loading="loading" border element-loading-text="拼命加载中" style="width: 100%;">
           <el-table-column type="index" label="序号" width="50"></el-table-column>
           <el-table-column :show-overflow-tooltip="true" sortable prop="fileName" label="文件名" width="200">
           </el-table-column>
@@ -243,6 +243,8 @@ export default {
       errorInfoVisible:false, 
       errorInfo:'',
       proptype: "",
+      proptype2: "",
+      proptype3: "",
       activeName: 'first',
     }
   },
@@ -259,6 +261,22 @@ export default {
       this.formInline.page = 1; // 排序后返回第一页
       this.proptype = column.prop; // 将键名prop赋值给变量proptype
       this.listData = this.listData.sort(
+        this.SortFun(column.prop, column.order === "descending")
+      );
+    },
+   sortChange2(column) {
+      // console.log("排序", column.prop, column.order);
+      this.formInline2.page = 1; // 排序后返回第一页
+      this.proptype2 = column.prop; // 将键名prop赋值给变量proptype
+      this.listData2 = this.listData2.sort(
+        this.SortFun(column.prop, column.order === "descending")
+      );
+    },
+   sortChange3(column) {
+      // console.log("排序", column.prop, column.order);
+      this.formInline3.page = 1; // 排序后返回第一页
+      this.proptype3 = column.prop; // 将键名prop赋值给变量proptype
+      this.listData3 = this.listData3.sort(
         this.SortFun(column.prop, column.order === "descending")
       );
     },
