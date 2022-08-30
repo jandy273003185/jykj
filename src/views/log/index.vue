@@ -124,7 +124,7 @@
           </el-table-column>
         </el-table>
         <!-- 分页组件 -->
-        <Pagination v-bind:child-msg="pageparm" @callFather="callFather"></Pagination>
+        <Pagination v-bind:child-msg="pageparm2" @callFather="callFather2"></Pagination>
       </el-tab-pane>
       <el-tab-pane label="监控日志" name="third">
         <el-form :inline="true" :model="formInline3" class="user-search">
@@ -145,7 +145,7 @@
         <!--列表-->
         <el-table  @sort-change='sortChange' size="small" :data="listData3" highlight-current-row v-loading="loading" border element-loading-text="拼命加载中" style="width: 100%;">
           <el-table-column type="index" label="序号" width="50"></el-table-column>
-          <el-table-column :show-overflow-tooltip="true" sortable prop="fileName" label="文件名" width="150">
+          <el-table-column :show-overflow-tooltip="true" sortable prop="fileName" label="文件名" width="200">
           </el-table-column>
           <el-table-column  sortable="custom" :show-overflow-tooltip="true" prop="fileSize" label="文件大小" width="120">
           </el-table-column>
@@ -173,7 +173,7 @@
           </el-table-column>
         </el-table>
         <!-- 分页组件 -->
-        <Pagination v-bind:child-msg="pageparm" @callFather="callFather"></Pagination>
+        <Pagination v-bind:child-msg="pageparm3" @callFather="callFather3"></Pagination>
       </el-tab-pane>
     </el-tabs>
     
@@ -226,6 +226,16 @@ export default {
       listData3: [], //
       // 分页参数
       pageparm: {
+        currentPage: 1,
+        pageSize: 10,
+        total: 10
+      },
+      pageparm2: {
+        currentPage: 1,
+        pageSize: 10,
+        total: 10
+      },
+      pageparm3: {
         currentPage: 1,
         pageSize: 10,
         total: 10
@@ -303,9 +313,9 @@ export default {
           } else {
             this.listData2 = res.msg.records
             // 分页赋值
-            this.pageparm.currentPage = this.formInline2.page
-            this.pageparm.pageSize = this.formInline2.size
-            this.pageparm.total = res.msg.total
+            this.pageparm2.currentPage = this.formInline2.page
+            this.pageparm2.pageSize = this.formInline2.size
+            this.pageparm2.total = res.msg.total
           }
         })
         .catch(err => {
@@ -326,9 +336,9 @@ export default {
           } else {
             this.listData3 = res.msg.records
             // 分页赋值
-            this.pageparm.currentPage = this.formInline3.page
-            this.pageparm.pageSize = this.formInline3.size
-            this.pageparm.total = res.msg.total
+            this.pageparm3.currentPage = this.formInline3.page
+            this.pageparm3.pageSize = this.formInline3.size
+            this.pageparm3.total = res.msg.total
           }
         })
         .catch(err => {
@@ -374,6 +384,16 @@ export default {
       this.formInline.page = parm.currentPage
       this.formInline.size= parm.pageSize
       this.getdata(this.formInline)
+    },
+    callFather2(parm) {
+      this.formInline2.page = parm.currentPage
+      this.formInline2.size= parm.pageSize
+      this.getdata2(this.formInline2)
+    },
+    callFather3(parm) {
+      this.formInline3.page = parm.currentPage
+      this.formInline3.size= parm.pageSize
+      this.getdata3(this.formInline3)
     },
     // 搜索事件
     search() {
